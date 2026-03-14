@@ -1,0 +1,91 @@
+### Get all posts
+GET http://localhost:8080/posts
+Accept: application/json
+
+### Create a new post (slug will be generated)
+POST http://localhost:8080/posts
+Content-Type: application/json
+
+{
+  "title": "Welcome to my Blog",
+  "content": "This is a post whose slug will be automatically generated from the title.",
+  "author": "Adrian"
+}
+
+### Get the generated post
+GET http://localhost:8080/posts/welcome-to-my-blog
+Accept: application/json
+
+### Create a post with a custom slug
+POST http://localhost:8080/posts
+Content-Type: application/json
+
+{
+  "title": "Post with custom slug",
+  "content": "This post has its own slug set manually.",
+  "slug": "custom-slug-example",
+  "author": "Adrian"
+}
+
+### Try to create a post with the same slug (should return 409 Conflict)
+POST http://localhost:8080/posts
+Content-Type: application/json
+
+{
+  "title": "Another Post with same custom slug",
+  "content": "This post tries to use the same slug.",
+  "slug": "custom-slug-example",
+  "author": "Adrian"
+}
+
+### Try to create a post with the same title (should return 409 Conflict due to duplicate slug generation)
+POST http://localhost:8080/posts
+Content-Type: application/json
+
+{
+  "title": "Post with custom slug",
+  "content": "This post has the same title and will generate the same slug.",
+  "author": "Adrian"
+}
+
+### Try to create a post with missing title (should return 400 Bad Request)
+POST http://localhost:8080/posts
+Content-Type: application/json
+
+{
+  "content": "Post with no title",
+  "author": "Adrian"
+}
+
+### Try to create a post with empty title (should return 400 Bad Request)
+POST http://localhost:8080/posts
+Content-Type: application/json
+
+{
+  "title": "  ",
+  "content": "Post with empty title",
+  "author": "Adrian"
+}
+
+### Get the post by custom slug
+GET http://localhost:8080/posts/custom-slug-example
+Accept: application/json
+
+### Update post title (should update slug too)
+PUT http://localhost:8080/posts/welcome-to-my-blog
+Content-Type: application/json
+
+{
+  "title": "Welcome to my Blog",
+  "content": "Updated content. :)"
+}
+
+### Get post with new slug
+GET http://localhost:8080/posts/welcome-to-my-updated-blog
+Accept: application/json
+
+### Delete post
+DELETE http://localhost:8080/posts/welcome-to-my-updated-blog
+
+### Delete other post
+DELETE http://localhost:8080/posts/custom-slug-example
