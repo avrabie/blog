@@ -16,6 +16,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.time.Duration;
 
 @Service
 public class CommentHandler {
@@ -42,9 +43,18 @@ public class CommentHandler {
                         .data(comment)
                         .event("comment-added")
                         .build());
+        
+        // Add heartbeat every 15 seconds to keep connection alive
+        Flux<ServerSentEvent<Comment>> heartbeat = Flux.interval(Duration.ofSeconds(15))
+                .map(i -> ServerSentEvent.<Comment>builder()
+                        .comment("keep-alive")
+                        .build());
+        
+        Flux<ServerSentEvent<Comment>> mergedFlux = Flux.merge(sseFlux, heartbeat);
+        
         return ServerResponse.ok()
                 .contentType(MediaType.TEXT_EVENT_STREAM)
-                .body(sseFlux, ServerSentEvent.class);
+                .body(mergedFlux, ServerSentEvent.class);
     }
 
     public Mono<ServerResponse> addComment(ServerRequest request) {
@@ -79,8 +89,17 @@ public class CommentHandler {
                         .data(post)
                         .event("post-added")
                         .build());
+        
+        // Add heartbeat every 15 seconds
+        Flux<ServerSentEvent<Post>> heartbeat = Flux.interval(Duration.ofSeconds(15))
+                .map(i -> ServerSentEvent.<Post>builder()
+                        .comment("keep-alive")
+                        .build());
+        
+        Flux<ServerSentEvent<Post>> mergedFlux = Flux.merge(sseFlux, heartbeat);
+        
         return ServerResponse.ok()
                 .contentType(MediaType.TEXT_EVENT_STREAM)
-                .body(sseFlux, ServerSentEvent.class);
+                .body(mergedFlux, ServerSentEvent.class);
     }
 }
