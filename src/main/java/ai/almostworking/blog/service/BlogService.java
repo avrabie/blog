@@ -7,16 +7,19 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
 
 @Service
 public class BlogService {
 
     private final PostRepository postRepository;
     private final SlugService slugService;
+    private final Sinks.Many<Post> postSink;
 
     public BlogService(PostRepository postRepository, SlugService slugService) {
         this.postRepository = postRepository;
         this.slugService = slugService;
+        this.postSink = Sinks.many().multicast().onBackpressureBuffer();
     }
 
     public Flux<Post> getAllPosts() {
@@ -27,11 +30,16 @@ public class BlogService {
         return postRepository.findBySlug(slug);
     }
 
+    public Flux<Post> getPostStream() {
+        return postSink.asFlux();
+    }
+
     public Mono<Post> createPost(Post post) {
         if (post.getSlug() == null || post.getSlug().isEmpty()) {
             post.setSlug(slugService.makeSlug(post.getTitle()));
         }
         return postRepository.save(post)
+                .doOnNext(postSink::tryEmitNext)
                 .onErrorResume(DuplicateKeyException.class, e -> Mono.error(new PostAlreadyExistsException("A post with this slug already exists: " + post.getSlug(), e)));
     }
 

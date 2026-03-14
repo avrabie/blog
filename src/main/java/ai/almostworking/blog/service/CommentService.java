@@ -6,16 +6,19 @@ import ai.almostworking.blog.repository.PostRepository;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
 
 @Service
 public class CommentService {
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
+    private final Sinks.Many<Comment> commentSink;
 
     public CommentService(CommentRepository commentRepository, PostRepository postRepository) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
+        this.commentSink = Sinks.many().multicast().onBackpressureBuffer();
     }
 
     public Flux<Comment> getCommentsByPostSlug(String slug) {
@@ -23,11 +26,18 @@ public class CommentService {
                 .flatMapMany(post -> commentRepository.findAllByPostId(post.getId()));
     }
 
+    public Flux<Comment> getCommentStream(String slug) {
+        return postRepository.findBySlug(slug)
+                .flatMapMany(post -> commentSink.asFlux()
+                        .filter(comment -> comment.getPostId().equals(post.getId())));
+    }
+
     public Mono<Comment> addComment(String slug, Comment comment) {
         return postRepository.findBySlug(slug)
                 .flatMap(post -> {
                     comment.setPostId(post.getId());
-                    return commentRepository.save(comment);
+                    return commentRepository.save(comment)
+                            .doOnNext(commentSink::tryEmitNext);
                 });
     }
 

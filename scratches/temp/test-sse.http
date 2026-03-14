@@ -1,0 +1,28 @@
+### Subscribe to comments for a specific post
+# Open this in a browser or use a tool that supports SSE
+GET http://localhost:8080/sse/posts/welcome-to-my-blog/comments/stream
+Accept: text/event-stream
+
+### Add a comment to the post to trigger the stream
+POST http://localhost:8080/posts/welcome-to-my-blog/comments
+Content-Type: application/json
+
+{
+  "author": "SSE Tester",
+  "content": "This comment should appear in the real-time stream!"
+}
+
+### Subscribe to new posts
+# This will stream any new post created in the system
+GET http://localhost:8080/sse/posts/stream
+Accept: text/event-stream
+
+### Create a new post to trigger the post stream
+POST http://localhost:8080/posts
+Content-Type: application/json
+
+{
+  "title": "Real-time Post",
+  "content": "This post should appear in the SSE stream at /sse/posts/stream",
+  "author": "SSE Author"
+}

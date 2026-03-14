@@ -143,3 +143,30 @@ CREATE TABLE post (
     - `PUT /posts/{slug}/comments/{id}`: Update an existing comment.
     - `DELETE /posts/{slug}/comments/{id}`: Remove a comment.
 - Created `scratches/temp/test-comments.http` to test the new endpoints.
+- Documented the changes in `steps.md`.
+
+---
+
+## Step 13: Adding Real-Time Comments with SSE
+**Prompt:**
+"can we add an endpoint for the comments which will be SSE server streamed events. i want the subscribers to see the new comments as soon as they are available: like when someone comments on a post in real time. how do we do that? please add a new RouterFunction instead of modifying the existing working ones"
+
+**Actions:**
+- Integrated `Sinks.Many` into `CommentService` to broadcast new comments to all active subscribers.
+- Implemented `getCommentStream` in `CommentService` to filter the broadcast by post slug.
+- Added `streamComments` to `CommentHandler` to return a `Flux<ServerSentEvent<Comment>>`.
+- Configured a separate `sseRoutes` RouterFunction bean in `BlogRoutes` to handle real-time streaming at `/sse/posts/{slug}/comments/stream`.
+- Created `scratches/temp/test-sse.http` for verification.
+
+---
+
+## Step 14: Streaming All New Posts with SSE
+**Prompt:**
+"implement in the same way .GET("/sse/posts/stream", commentHandler::streamPosts)"
+
+**Actions:**
+- Added a `postSink` to `BlogService` to broadcast all newly created posts.
+- Implemented `getPostStream` in `BlogService` returning a `Flux<Post>`.
+- Updated `CommentHandler` to inject `BlogService` and handle `streamPosts`.
+- Configured the new route in `BlogRoutes` at `/sse/posts/stream`.
+- Added test cases to `scratches/temp/test-sse.http` to verify real-time post streaming.

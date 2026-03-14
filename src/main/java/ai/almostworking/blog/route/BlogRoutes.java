@@ -25,4 +25,12 @@ public class BlogRoutes {
                 .DELETE("/posts/{slug}", postHandler::deletePost)
                 .build();
     }
+
+    @Bean
+    public RouterFunction<ServerResponse> sseRoutes(CommentHandler commentHandler) {
+        return RouterFunctions.route()
+                .GET("/sse/posts/{slug}/comments/stream", commentHandler::streamComments)
+                .GET("/sse/posts/stream", commentHandler::streamPosts)
+                .build();
+    }
 }

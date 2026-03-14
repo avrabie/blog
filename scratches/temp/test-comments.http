@@ -3,7 +3,7 @@ POST http://localhost:8080/posts
 Content-Type: application/json
 
 {
-  "title": "Post for comments",
+  "title": "Post for comments 2",
   "content": "A post to test comments.",
   "author": "Adrian"
 }

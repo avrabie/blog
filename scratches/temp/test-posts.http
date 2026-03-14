@@ -7,8 +7,8 @@ POST http://localhost:8080/posts
 Content-Type: application/json
 
 {
-  "title": "Welcome to my Blog",
-  "content": "This is a post whose slug will be automatically generated from the title.",
+  "title": "Welcome to my Blog 2",
+  "content": "# Iaka My WebFlux Journey Spring WebFlux allows reactive programming.",
   "author": "Adrian"
 }
 
@@ -88,4 +88,4 @@ Accept: application/json
 DELETE http://localhost:8080/posts/welcome-to-my-updated-blog
 
 ### Delete other post
-DELETE http://localhost:8080/posts/custom-slug-example
+DELETE http://localhost:8080/posts/post-with-custom-slug
