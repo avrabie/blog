@@ -1,5 +1,6 @@
 package ai.almostworking.blog.route;
 
+import ai.almostworking.blog.handler.CommentHandler;
 import ai.almostworking.blog.handler.PostHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,8 +12,12 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 public class BlogRoutes {
 
     @Bean
-    public RouterFunction<ServerResponse> routes(PostHandler postHandler) {
+    public RouterFunction<ServerResponse> routes(PostHandler postHandler, CommentHandler commentHandler) {
         return RouterFunctions.route()
+                .GET("/posts/{slug}/comments", commentHandler::getCommentsByPostSlug)
+                .POST("/posts/{slug}/comments", commentHandler::addComment)
+                .PUT("/posts/{slug}/comments/{id}", commentHandler::updateComment)
+                .DELETE("/posts/{slug}/comments/{id}", commentHandler::deleteComment)
                 .GET("/posts", postHandler::getAllPosts)
                 .POST("/posts", postHandler::createPost)
                 .GET("/posts/{slug}", postHandler::getPostBySlug)

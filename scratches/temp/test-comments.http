@@ -1,0 +1,70 @@
+### Create a post first to add comments to
+POST http://localhost:8080/posts
+Content-Type: application/json
+
+{
+  "title": "Post for comments",
+  "content": "A post to test comments.",
+  "author": "Adrian"
+}
+
+### Get all comments for the post (should be empty)
+GET http://localhost:8080/posts/post-for-comments/comments
+Accept: application/json
+
+### Add a comment to the post
+POST http://localhost:8080/posts/post-for-comments/comments
+Content-Type: application/json
+
+{
+  "author": "Commenter 1",
+  "content": "This is the first comment!"
+}
+
+### Add another comment
+POST http://localhost:8080/posts/post-for-comments/comments
+Content-Type: application/json
+
+{
+  "author": "Commenter 2",
+  "content": "This is the second comment!"
+}
+
+### Get all comments for the post (should have 2 comments)
+GET http://localhost:8080/posts/post-for-comments/comments
+Accept: application/json
+
+### Try to add a comment with missing author (should return 400 Bad Request)
+POST http://localhost:8080/posts/post-for-comments/comments
+Content-Type: application/json
+
+{
+  "content": "Comment with no author"
+}
+
+### Try to add a comment with empty content (should return 400 Bad Request)
+POST http://localhost:8080/posts/post-for-comments/comments
+Content-Type: application/json
+
+{
+  "author": "Adrian",
+  "content": "  "
+}
+
+### Update a comment (assuming ID is 1, check previous response)
+PUT http://localhost:8080/posts/post-for-comments/comments/1
+Content-Type: application/json
+
+{
+  "content": "This is the updated first comment!"
+}
+
+### Delete a comment (assuming ID is 2)
+DELETE http://localhost:8080/posts/post-for-comments/comments/2
+
+### Get all comments for the post (should have 1 comment)
+GET http://localhost:8080/posts/post-for-comments/comments
+Accept: application/json
+
+### Cleanup - Delete the post (should also delete comments due to CASCADE)
+DELETE http://localhost:8080/posts/post-for-comments
