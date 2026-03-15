@@ -16,6 +16,7 @@ public class BlogRoutes {
         return RouterFunctions.route()
                 .GET("/posts/{slug}/comments", commentHandler::getCommentsByPostSlug)
                 .POST("/posts/{slug}/comments", commentHandler::addComment)
+                .POST("/comments/{id}/replies", commentHandler::addReply)
                 .PUT("/posts/{slug}/comments/{id}", commentHandler::updateComment)
                 .DELETE("/posts/{slug}/comments/{id}", commentHandler::deleteComment)
                 .GET("/posts", postHandler::getAllPosts)

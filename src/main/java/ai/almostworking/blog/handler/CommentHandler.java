@@ -71,6 +71,17 @@ public class CommentHandler {
                 .onErrorResume(InvalidCommentException.class, e -> ServerResponse.badRequest().bodyValue(new ErrorResponse(e.getMessage())));
     }
 
+    public Mono<ServerResponse> addReply(ServerRequest request) {
+        Long parentId = Long.valueOf(request.pathVariable("id"));
+        return request.bodyToMono(Comment.class)
+                .flatMap(commentValidationService::validateForCreate)
+                .flatMap(comment -> commentService.addReply(parentId, comment))
+                .flatMap(comment -> ServerResponse.created(URI.create("/comments/" + comment.getId()))
+                        .bodyValue(comment))
+                .switchIfEmpty(ServerResponse.notFound().build())
+                .onErrorResume(InvalidCommentException.class, e -> ServerResponse.badRequest().bodyValue(new ErrorResponse(e.getMessage())));
+    }
+
     public Mono<ServerResponse> updateComment(ServerRequest request) {
         Long id = Long.valueOf(request.pathVariable("id"));
         return request.bodyToMono(Comment.class)
