@@ -7,8 +7,8 @@ POST http://localhost:8080/posts
 Content-Type: application/json
 
 {
-  "title": "Welcome to my Blog Davide",
-  "content": "# Iaka My WebFlux Journey Spring WebFlux allows reactive programming.",
+  "title": "Hello World",
+  "content": "### Some content goes here",
   "author": "Adrian"
 }
 

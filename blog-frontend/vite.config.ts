@@ -21,11 +21,11 @@ export default defineConfig({
         // SSE stability: prevent proxy timeouts
         timeout: 0,
         proxyTimeout: 0,
-        configure: (proxy, options) => {
-          proxy.on('proxyReq', (proxyReq, req, res) => {
+        configure: (proxy, _options) => {
+          proxy.on('proxyReq', (_proxyReq, req, _res) => {
             console.log('[Vite Proxy] SSE request:', req.url);
           });
-          proxy.on('proxyRes', (proxyRes, req, res) => {
+          proxy.on('proxyRes', (proxyRes, _req, _res) => {
             console.log('[Vite Proxy] SSE response status:', proxyRes.statusCode);
             console.log('[Vite Proxy] Response headers:', proxyRes.headers);
 
