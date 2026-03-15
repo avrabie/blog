@@ -23,6 +23,7 @@ public class BlogRoutes {
                 .GET("/posts/{slug}", postHandler::getPostBySlug)
                 .PUT("/posts/{slug}", postHandler::updatePost)
                 .DELETE("/posts/{slug}", postHandler::deletePost)
+                .DELETE("/posts/id/{id}", postHandler::deletePostById)
                 .DELETE("/posts", postHandler::deleteAllPosts) // I know!
                 .build();
     }

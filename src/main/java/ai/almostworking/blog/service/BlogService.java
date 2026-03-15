@@ -1,6 +1,7 @@
 package ai.almostworking.blog.service;
 
 import ai.almostworking.blog.exception.PostAlreadyExistsException;
+import ai.almostworking.blog.exception.PostNotFoundException;
 import ai.almostworking.blog.model.Post;
 import ai.almostworking.blog.repository.PostRepository;
 import org.springframework.dao.DuplicateKeyException;
@@ -85,5 +86,16 @@ public class BlogService {
 
     public Mono<Void> deleteAllPosts() {
         return postRepository.deleteAll();
+    }
+
+    public Mono<Post> getPostById(long id) {
+        Mono<Post> byId = postRepository.findById(id);
+        return byId;
+    }
+
+    public Mono<Void> deletePostById(long id) {
+        return postRepository.findById(id)
+                .flatMap(postRepository::delete)
+                .switchIfEmpty(Mono.error(new PostNotFoundException("Post not found with id: " + id)));
     }
 }

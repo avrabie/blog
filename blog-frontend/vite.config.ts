@@ -14,30 +14,29 @@ export default defineConfig({
         target: 'http://127.0.0.1:8080',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
-        // For SSE stability
+      },
+      '/sse': {
+        target: 'http://127.0.0.1:8080',
+        changeOrigin: true,
+        // SSE stability: prevent proxy timeouts
         timeout: 0,
         proxyTimeout: 0,
-        configure: (proxy, _options) => {
-          proxy.on('proxyReq', (proxyReq, req, _res) => {
-            if (req.url?.includes('stream')) {
-              proxyReq.setHeader('Connection', 'keep-alive');
-              proxyReq.setHeader('Cache-Control', 'no-cache');
-            }
+        configure: (proxy, options) => {
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log('[Vite Proxy] SSE request:', req.url);
           });
-          proxy.on('proxyRes', (proxyRes, req, _res) => {
-            if (req.url?.includes('stream')) {
-              // Ensure we don't have multiple content-type headers
-              delete proxyRes.headers['content-type'];
-              proxyRes.headers['content-type'] = 'text/event-stream';
-              
-              proxyRes.headers['cache-control'] = 'no-cache, no-transform';
+          proxy.on('proxyRes', (proxyRes, req, res) => {
+            console.log('[Vite Proxy] SSE response status:', proxyRes.statusCode);
+            console.log('[Vite Proxy] Response headers:', proxyRes.headers);
+
+            // Fix the connection header for SSE streaming
+            if (proxyRes.headers['content-type']?.includes('text/event-stream')) {
+              delete proxyRes.headers['connection'];
               proxyRes.headers['connection'] = 'keep-alive';
-              proxyRes.headers['x-accel-buffering'] = 'no';
-              
-              delete proxyRes.headers['content-encoding'];
+              console.log('[Vite Proxy] Fixed SSE connection header to keep-alive');
             }
           });
-        }
+        },
       },
     },
   },

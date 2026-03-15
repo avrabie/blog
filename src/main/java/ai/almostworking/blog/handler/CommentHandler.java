@@ -38,21 +38,24 @@ public class CommentHandler {
 
     public Mono<ServerResponse> streamComments(ServerRequest request) {
         String slug = request.pathVariable("slug");
+        System.out.println("[SSE] New connection for comments stream: " + slug);
+
         Flux<ServerSentEvent<Comment>> sseFlux = commentService.getCommentStream(slug)
+                .doOnNext(comment -> System.out.println("[SSE] Emitting comment-added event for: " + comment.getId()))
                 .map(comment -> ServerSentEvent.<Comment>builder()
                         .data(comment)
                         .event("comment-added")
                         .build());
-        
+
         // Add heartbeat every 15 seconds to keep connection alive
         Flux<ServerSentEvent<Comment>> heartbeat = Flux.interval(Duration.ofSeconds(15))
+                .doOnNext(i -> System.out.println("[SSE] Sending heartbeat #" + i + " for slug: " + slug))
                 .map(i -> ServerSentEvent.<Comment>builder()
                         .event("keep-alive")
-                        .data(null)
                         .build());
-        
+
         Flux<ServerSentEvent<Comment>> mergedFlux = Flux.merge(sseFlux, heartbeat);
-        
+
         return ServerResponse.ok()
                 .contentType(MediaType.TEXT_EVENT_STREAM)
                 .body(mergedFlux, ServerSentEvent.class);

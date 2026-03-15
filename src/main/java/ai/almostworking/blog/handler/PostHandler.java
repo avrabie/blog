@@ -68,4 +68,10 @@ public class PostHandler {
         return blogService.deleteAllPosts()
                 .then(ServerResponse.noContent().build());
     }
+
+    public Mono<ServerResponse> deletePostById(ServerRequest serverRequest) {
+        long id = Long.parseLong(serverRequest.pathVariable("id"));
+        blogService.deletePostById(id);
+        return null;
+    }
 }
