@@ -37,7 +37,12 @@ public class CommentService {
                 .flatMap(post -> {
                     comment.setPostId(post.getId());
                     return commentRepository.save(comment)
-                            .doOnNext(commentSink::tryEmitNext);
+                            .doOnNext(savedComment -> {
+                                Sinks.EmitResult result = commentSink.tryEmitNext(savedComment);
+                                if (result.isFailure()) {
+                                    System.err.println("[CommentService] Failed to emit comment: " + result);
+                                }
+                            });
                 });
     }
 

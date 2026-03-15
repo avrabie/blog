@@ -12,7 +12,14 @@ export const createSSEConnection = <T>(
   const eventSource = new EventSource(fullUrl);
 
   const handleMessage = (event: MessageEvent) => {
+    if (event.type === 'keep-alive') {
+        console.log(`[SSE] Heartbeat received from ${url}`);
+        return;
+    }
+    
     console.log(`[SSE] Received event "${event.type}" from ${url}:`, event.data);
+    if (!event.data) return;
+    
     try {
       const data = JSON.parse(event.data);
       onMessage(data);
@@ -23,6 +30,7 @@ export const createSSEConnection = <T>(
 
   if (options?.eventName) {
     eventSource.addEventListener(options.eventName, handleMessage as EventListener);
+    eventSource.addEventListener('keep-alive', handleMessage as EventListener);
   } else {
     eventSource.onmessage = handleMessage;
   }

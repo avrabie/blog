@@ -47,7 +47,8 @@ public class CommentHandler {
         // Add heartbeat every 15 seconds to keep connection alive
         Flux<ServerSentEvent<Comment>> heartbeat = Flux.interval(Duration.ofSeconds(15))
                 .map(i -> ServerSentEvent.<Comment>builder()
-                        .comment("keep-alive")
+                        .event("keep-alive")
+                        .data(null)
                         .build());
         
         Flux<ServerSentEvent<Comment>> mergedFlux = Flux.merge(sseFlux, heartbeat);
@@ -93,7 +94,8 @@ public class CommentHandler {
         // Add heartbeat every 15 seconds
         Flux<ServerSentEvent<Post>> heartbeat = Flux.interval(Duration.ofSeconds(15))
                 .map(i -> ServerSentEvent.<Post>builder()
-                        .comment("keep-alive")
+                        .event("keep-alive")
+                        .data(null)
                         .build());
         
         Flux<ServerSentEvent<Post>> mergedFlux = Flux.merge(sseFlux, heartbeat);

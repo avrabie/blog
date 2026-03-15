@@ -5,6 +5,7 @@ import ai.almostworking.blog.model.Post;
 import ai.almostworking.blog.repository.PostRepository;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
@@ -39,7 +40,12 @@ public class BlogService {
             post.setSlug(slugService.makeSlug(post.getTitle()));
         }
         return postRepository.save(post)
-                .doOnNext(postSink::tryEmitNext)
+                .doOnNext(savedPost -> {
+                    Sinks.EmitResult result = postSink.tryEmitNext(savedPost);
+                    if (result.isFailure()) {
+                        System.err.println("[BlogService] Failed to emit post (create): " + result);
+                    }
+                })
                 .onErrorResume(DuplicateKeyException.class, e -> Mono.error(new PostAlreadyExistsException("A post with this slug already exists: " + post.getSlug(), e)));
     }
 
@@ -62,6 +68,12 @@ public class BlogService {
                         existingPost.setAuthor(post.getAuthor());
                     }
                     return postRepository.save(existingPost)
+                            .doOnNext(savedPost -> {
+                                Sinks.EmitResult result = postSink.tryEmitNext(savedPost);
+                                if (result.isFailure()) {
+                                    System.err.println("[BlogService] Failed to emit post (update): " + result);
+                                }
+                            })
                             .onErrorResume(DuplicateKeyException.class, e -> Mono.error(new PostAlreadyExistsException("A post with this slug already exists: " + existingPost.getSlug(), e)));
                 });
     }
@@ -69,5 +81,9 @@ public class BlogService {
     public Mono<Void> deletePost(String slug) {
         return postRepository.findBySlug(slug)
                 .flatMap(postRepository::delete);
+    }
+
+    public Mono<Void> deleteAllPosts() {
+        return postRepository.deleteAll();
     }
 }

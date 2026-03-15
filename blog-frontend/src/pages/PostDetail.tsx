@@ -8,7 +8,7 @@ import { CommentSection } from '../components/blog/CommentSection';
 import { Badge } from '../components/ui/Badge';
 import { Skeleton } from '../components/ui/Skeleton';
 import { formatDate } from '../utils';
-import { ArrowLeft, Clock, User, Calendar, Copy, Check } from 'lucide-react';
+import { ArrowLeft, Clock, User, Calendar, Copy, Check, Edit2 } from 'lucide-react';
 
 export const PostDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -65,10 +65,20 @@ export const PostDetail: React.FC = () => {
         style={{ scaleX }}
       />
 
-      <Link to="/" className="inline-flex items-center gap-2 text-neutral-500 hover:text-white transition-colors mb-12 group">
-        <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-        Back to posts
-      </Link>
+      <div className="flex items-center justify-between mb-12">
+        <Link to="/" className="inline-flex items-center gap-2 text-neutral-500 hover:text-white transition-colors group">
+          <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+          Back to posts
+        </Link>
+
+        <Link 
+          to={`/edit-post/${post.slug}`}
+          className="glass-button flex items-center gap-2 text-sm py-2"
+        >
+          <Edit2 size={16} />
+          Edit Post
+        </Link>
+      </div>
 
       <header className="space-y-6 mb-12">
         <div className="flex gap-2">

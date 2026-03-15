@@ -4,6 +4,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Home } from './pages/Home';
 import { PostDetail } from './pages/PostDetail';
 import { About } from './pages/About';
+import { CreatePost } from './pages/CreatePost';
+import { EditPost } from './pages/EditPost';
 import { Layout } from './components/layout/Layout';
 import { Skeleton } from './components/ui/Skeleton';
 
@@ -75,6 +77,8 @@ const App: React.FC = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/posts/:slug" element={<PostDetail />} />
                 <Route path="/about" element={<About />} />
+                <Route path="/create-post" element={<CreatePost />} />
+                <Route path="/edit-post/:slug" element={<EditPost />} />
               </Routes>
             </Suspense>
           </Layout>

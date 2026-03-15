@@ -63,4 +63,9 @@ public class PostHandler {
         return blogService.deletePost(slug)
                 .then(ServerResponse.noContent().build());
     }
+
+    public Mono<ServerResponse> deleteAllPosts(ServerRequest serverRequest) {
+        return blogService.deleteAllPosts()
+                .then(ServerResponse.noContent().build());
+    }
 }

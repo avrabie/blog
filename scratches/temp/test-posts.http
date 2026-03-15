@@ -89,3 +89,6 @@ DELETE http://localhost:8080/posts/welcome-to-my-updated-blog
 
 ### Delete other post
 DELETE http://localhost:8080/posts/post-with-custom-slug
+
+### Delete all posts
+DELETE http://localhost:8080/posts
