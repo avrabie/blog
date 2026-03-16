@@ -7,6 +7,7 @@ import ai.almostworking.blog.model.ErrorResponse;
 import ai.almostworking.blog.model.Post;
 import ai.almostworking.blog.service.BlogService;
 import ai.almostworking.blog.service.PostValidationService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -21,10 +22,12 @@ public class PostHandler {
 
     private final BlogService blogService;
     private final PostValidationService postValidationService;
+    private final String apiPrefix;
 
-    public PostHandler(BlogService blogService, PostValidationService postValidationService) {
+    public PostHandler(BlogService blogService, PostValidationService postValidationService, @Value("${blog.api.prefix:/api/blog}") String apiPrefix) {
         this.blogService = blogService;
         this.postValidationService = postValidationService;
+        this.apiPrefix = apiPrefix;
     }
 
     public Mono<ServerResponse> getAllPosts(ServerRequest serverRequest) {
@@ -43,7 +46,7 @@ public class PostHandler {
         return request.bodyToMono(Post.class)
                 .flatMap(postValidationService::validateForCreate)
                 .flatMap(blogService::createPost)
-                .flatMap(post -> ServerResponse.created(URI.create("/posts/" + post.getSlug())).bodyValue(post))
+                .flatMap(post -> ServerResponse.created(request.uriBuilder().path("/{slug}").build(post.getSlug())).bodyValue(post))
                 .onErrorResume(PostAlreadyExistsException.class, e -> ServerResponse.status(HttpStatus.CONFLICT).bodyValue(new ErrorResponse(e.getMessage())))
                 .onErrorResume(InvalidPostException.class, e -> ServerResponse.badRequest().bodyValue(new ErrorResponse(e.getMessage())));
     }
