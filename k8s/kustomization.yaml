@@ -3,5 +3,14 @@ kind: Kustomization
 namespace: blog-namespace
 
 resources:
+  - namespace.yaml
   - be
   - fe
+  - db
+
+secretGenerator:
+  - name: postgres-secret
+    literals:
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_USER=myuser
+      - POSTGRES_DB=mydatabase

@@ -5,7 +5,7 @@ namespace: blog-namespace
 resources:
   - deployment.yaml
   - service.yaml
-  - namespace.yaml
+  - configmap.yaml
 
 images:
   - name: gluonstream/blog-be
