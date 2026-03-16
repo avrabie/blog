@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blog-be
+  labels:
+    app: blog-be
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blog-be
+  template:
+    metadata:
+      labels:
+        app: blog-be
+    spec:
+      containers:
+      - name: blog-be
+        image: gluonstream/blog-be:latest
+        ports:
+        - containerPort: 8082
+        env:
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:postgresql://postgres:5432/mydatabase"
+        - name: SPRING_DATASOURCE_USERNAME
+          value: "myuser"
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: "secret"
+        - name: SPRING_R2DBC_URL
+          value: "r2dbc:postgresql://postgres:5432/mydatabase"
+        - name: SPRING_R2DBC_USERNAME
+          value: "myuser"
+        - name: SPRING_R2DBC_PASSWORD
+          value: "secret"

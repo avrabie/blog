@@ -2,6 +2,7 @@ package ai.almostworking.blog.handler;
 
 import ai.almostworking.blog.exception.InvalidPostException;
 import ai.almostworking.blog.exception.PostAlreadyExistsException;
+import ai.almostworking.blog.exception.PostNotFoundException;
 import ai.almostworking.blog.model.ErrorResponse;
 import ai.almostworking.blog.model.Post;
 import ai.almostworking.blog.service.BlogService;
@@ -71,7 +72,10 @@ public class PostHandler {
 
     public Mono<ServerResponse> deletePostById(ServerRequest serverRequest) {
         long id = Long.parseLong(serverRequest.pathVariable("id"));
-        blogService.deletePostById(id);
-        return null;
+        Mono<Void> voidMono = blogService.deletePostById(id);
+        return voidMono
+                .then(ServerResponse.noContent().build())
+                .onErrorResume(PostNotFoundException.class, e -> ServerResponse.status(HttpStatus.NOT_FOUND).bodyValue(new ErrorResponse(e.getMessage())))
+                ;
     }
 }

@@ -60,3 +60,40 @@
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-neutral-700;
 }
+
+/* Post-only syntax highlighting */
+.post-content .hljs {
+  color: #e5e7eb;
+}
+
+.post-content .hljs-keyword,
+.post-content .hljs-selector-tag,
+.post-content .hljs-literal,
+.post-content .hljs-title,
+.post-content .hljs-section,
+.post-content .hljs-doctag,
+.post-content .hljs-type {
+  color: #c084fc;
+}
+
+.post-content .hljs-string,
+.post-content .hljs-attr,
+.post-content .hljs-attribute,
+.post-content .hljs-variable,
+.post-content .hljs-template-variable,
+.post-content .hljs-name {
+  color: #86efac;
+}
+
+.post-content .hljs-number,
+.post-content .hljs-symbol,
+.post-content .hljs-bullet,
+.post-content .hljs-link {
+  color: #fbbf24;
+}
+
+.post-content .hljs-comment,
+.post-content .hljs-quote {
+  color: inherit;
+  font-style: inherit;
+}

@@ -1,3 +1,6 @@
+import org.gradle.kotlin.dsl.named
+import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
+
 plugins {
     java
     id("org.springframework.boot") version "4.0.3"
@@ -43,4 +46,11 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.named<BootBuildImage>("bootBuildImage") {
+    val tag = project.findProperty("imageTag")?.toString() ?: "latest"
+
+    imageName.set("gluonstream/blog-be:$tag")
+    tags.set(listOf("gluonstream/blog-be:latest"))
 }

@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion, useScroll, useSpring } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
+import rehypeHighlight from 'rehype-highlight';
 import { getPostBySlug } from '../api/posts';
 import { CommentSection } from '../components/blog/CommentSection';
 import { Badge } from '../components/ui/Badge';
@@ -30,6 +31,19 @@ export const PostDetail: React.FC = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [slug]);
+
+  const getCodeText = (node: React.ReactNode): string => {
+    if (typeof node === 'string') {
+      return node;
+    }
+    if (Array.isArray(node)) {
+      return node.map(getCodeText).join('');
+    }
+    if (React.isValidElement(node)) {
+      return getCodeText((node.props as { children?: React.ReactNode }).children);
+    }
+    return '';
+  };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -111,12 +125,13 @@ export const PostDetail: React.FC = () => {
         </div>
       </header>
 
-      <div className="prose prose-invert prose-purple max-w-none prose-pre:bg-neutral-900 prose-pre:border prose-pre:border-white/10 prose-img:rounded-2xl">
+      <div className="post-content prose prose-invert prose-purple max-w-none prose-pre:bg-neutral-900 prose-pre:border prose-pre:border-white/10 prose-img:rounded-2xl">
         <ReactMarkdown
+          rehypePlugins={[rehypeHighlight]}
           components={{
             code({ className, children, ...props }: React.ComponentPropsWithoutRef<'code'>) {
               const match = /language-(\w+)/.exec(className || '');
-              const codeString = String(children).replace(/\n$/, '');
+              const codeString = getCodeText(children).replace(/\n$/, '');
               
               if (match) {
                 return (

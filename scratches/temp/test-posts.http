@@ -1,5 +1,5 @@
 ### Get all posts
-GET http://localhost:8080/posts
+GET http://localhost:8082/posts
 Accept: application/json
 
 ### Create a new post (slug will be generated)
@@ -92,3 +92,7 @@ DELETE http://localhost:8080/posts/post-with-custom-slug
 
 ### Delete all posts
 DELETE http://localhost:8080/posts
+
+
+### Delete id posts
+DELETE http://localhost:8082/posts/id/36

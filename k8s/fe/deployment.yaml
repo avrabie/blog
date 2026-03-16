@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blog-fe
+  labels:
+    app: blog-fe
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blog-fe
+  template:
+    metadata:
+      labels:
+        app: blog-fe
+    spec:
+      containers:
+      - name: blog-fe
+        image: gluonstream/blog-fe:latest
+        ports:
+        - containerPort: 80
