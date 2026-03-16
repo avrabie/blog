@@ -1,3 +1,5 @@
+import { API_BASE } from './client';
+
 export const createSSEConnection = <T>(
   url: string,
   onData: (data: T) => void,
@@ -7,11 +9,10 @@ export const createSSEConnection = <T>(
     onOpen?: () => void;
   } = {}
 ) => {
-  // Use direct connection to backend for SSE (bypass Vite proxy)
-  const sseBaseUrl =
-    import.meta.env.VITE_SSE_URL ||
-    (import.meta.env.DEV ? '' : import.meta.env.VITE_BACKEND_URL || '');
-  const fullUrl = `${sseBaseUrl}${url}${url.includes('?') ? '&' : '?'}t=${Date.now()}`;
+  // Same-origin SSE routed through the gateway.
+  const base = API_BASE.endsWith('/') ? API_BASE.slice(0, -1) : API_BASE;
+  const path = url.startsWith('/') ? url : `/${url}`;
+  const fullUrl = `${base}${path}${url.includes('?') ? '&' : '?'}t=${Date.now()}`;
 
   console.log(`[SSE] 🔌 Creating SSE connection to: ${fullUrl}`, { eventName: options.eventName });
   const eventSource = new EventSource(fullUrl);
