@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
+import reactor.util.concurrent.Queues;
 
 @Service
 public class CommentService {
@@ -18,7 +19,7 @@ public class CommentService {
     public CommentService(CommentRepository commentRepository, PostRepository postRepository) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
-        this.commentSink = Sinks.many().multicast().onBackpressureBuffer();
+        this.commentSink = Sinks.many().multicast().onBackpressureBuffer(Queues.XS_BUFFER_SIZE, false);
     }
 
     public Flux<Comment> getCommentsByPostSlug(String slug) {
