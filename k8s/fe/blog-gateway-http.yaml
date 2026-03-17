@@ -10,8 +10,8 @@ spec:
     - name: global-gateway
       namespace: gateway-namespace
   hostnames:
-    - blog.s4v3.local
-    - blog.s4v3.net
+    - blog2.s4v3.local
+    - blog2.s4v3.net
   rules:
     - matches:
         - path:
