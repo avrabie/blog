@@ -31,8 +31,16 @@ export const About: React.FC = () => {
           className="prose prose-invert prose-lg"
         >
           <p>
-            I'm a backend-leaning full-stack engineer passionate about building scalable, 
-            reactive systems and high-performance distributed architectures.
+            This blog is, in a sense, an experiment.
+
+            Its subject is itself: the process of building a reactive blog platform, from first principles to deployment.
+            At least to merely document what was built, but also to make mistakes and learn what does not work, under realistic constraints.
+
+            You can expect discussions on:
+
+            Reactive programming and its practical implications with a focus on: Java, Spring WebFlux. You can write in Kotlin if you want.
+
+            Occasional detours into software design just for fun.
           </p>
           <p>
             This blog is where I share my findings, experiments, and deep dives into 

@@ -81,7 +81,20 @@ export const EditPost: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title || !formData.content || !formData.author) {
+    
+    // Include pending tag if exists
+    let finalTags = [...formData.tags];
+    const trimmedTag = tagInput.trim();
+    if (trimmedTag && !finalTags.includes(trimmedTag)) {
+      finalTags.push(trimmedTag);
+    }
+
+    const submissionData = {
+      ...formData,
+      tags: finalTags
+    };
+
+    if (!submissionData.title || !submissionData.content || !submissionData.author) {
       alert('Please fill in all required fields (Title, Content, Author)');
       return;
     }
@@ -90,7 +103,7 @@ export const EditPost: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      const result = await updatePost(slug, formData);
+      const result = await updatePost(slug, submissionData);
       navigate(`/posts/${result.slug}`);
     } catch (error) {
       console.error('Failed to update post:', error);
@@ -110,9 +123,10 @@ export const EditPost: React.FC = () => {
   }
 
   return (
-    <div className="py-12 pb-40 max-w-4xl mx-auto">
+    <form onSubmit={handleSubmit} className="py-12 pb-40 max-w-4xl mx-auto">
       <header className="flex items-center justify-between mb-12">
         <button 
+          type="button"
           onClick={() => navigate(-1)}
           className="inline-flex items-center gap-2 text-neutral-500 hover:text-white transition-colors group"
         >
@@ -122,6 +136,7 @@ export const EditPost: React.FC = () => {
         
         <div className="flex gap-4">
           <button
+            type="button"
             onClick={() => setIsPreviewMode(!isPreviewMode)}
             className="glass-button flex items-center gap-2"
           >
@@ -130,7 +145,7 @@ export const EditPost: React.FC = () => {
           </button>
           
           <button
-            onClick={handleSubmit}
+            type="submit"
             disabled={isSubmitting}
             className="glass-button bg-brand-primary/20 border-brand-primary/40 text-brand-primary flex items-center gap-2 disabled:opacity-50"
           >
@@ -219,7 +234,7 @@ export const EditPost: React.FC = () => {
                     {formData.tags.map(tag => (
                       <Badge key={tag} className="flex items-center gap-1.5 px-3 py-1">
                         {tag}
-                        <button onClick={() => removeTag(tag)} className="hover:text-white transition-colors">
+                        <button type="button" onClick={() => removeTag(tag)} className="hover:text-white transition-colors">
                           <X size={12} />
                         </button>
                       </Badge>
@@ -299,6 +314,6 @@ export const EditPost: React.FC = () => {
           </div>
         )}
       </motion.div>
-    </div>
+    </form>
   );
 };
