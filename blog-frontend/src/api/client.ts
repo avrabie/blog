@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+export const API_BASE = '/api/blog';
+
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: API_BASE,
   headers: {
     'Content-Type': 'application/json',
   },

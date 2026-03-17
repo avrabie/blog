@@ -1,3 +1,5 @@
+import { API_BASE } from './client';
+
 export const createSSEConnection = <T>(
   url: string,
   onData: (data: T) => void,
@@ -7,9 +9,10 @@ export const createSSEConnection = <T>(
     onOpen?: () => void;
   } = {}
 ) => {
-  // Use direct connection to backend for SSE (bypass Vite proxy)
-  const sseBaseUrl = import.meta.env.VITE_SSE_URL || '';
-  const fullUrl = `${sseBaseUrl}${url}${url.includes('?') ? '&' : '?'}t=${Date.now()}`;
+  // Same-origin SSE routed through the gateway.
+  const base = API_BASE.endsWith('/') ? API_BASE.slice(0, -1) : API_BASE;
+  const path = url.startsWith('/') ? url : `/${url}`;
+  const fullUrl = `${base}${path}${url.includes('?') ? '&' : '?'}t=${Date.now()}`;
 
   console.log(`[SSE] 🔌 Creating SSE connection to: ${fullUrl}`, { eventName: options.eventName });
   const eventSource = new EventSource(fullUrl);
@@ -20,11 +23,7 @@ export const createSSEConnection = <T>(
     console.log(`[SSE] Event received - type: "${event.type}", data: "${event.data}"`);
 
     // Heartbeat check (named 'keep-alive' or empty data)
-    const isHeartbeat = event.type === 'keep-alive' ||
-                        !event.data ||
-                        event.data === 'null' ||
-                        event.data === '""' ||
-                        event.data === '';
+    const isHeartbeat = event.type == 'keep-alive';
 
     if (isHeartbeat) {
       console.log(`[SSE] ❤️ Heartbeat received from ${url}`);
@@ -62,10 +61,8 @@ export const createSSEConnection = <T>(
 
   // Standard listeners
   eventSource.addEventListener('message', handleEvent as EventListener);
-  eventSource.addEventListener('keep-alive', (event) => {
-    console.log(`[SSE] 📨 keep-alive event fired:`, event);
-    handleEvent(event as MessageEvent);
-  });
+  eventSource.addEventListener('keep-alive', handleEvent as EventListener);
+
 
   // Custom event listener
   if (options.eventName && options.eventName !== 'message') {

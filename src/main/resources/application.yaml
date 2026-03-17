@@ -1,3 +1,16 @@
+server:
+  port: 8082
 spring:
   application:
     name: blog
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/mydatabase
+    username: myuser
+    password: secret
+
+blog:
+  api:
+    prefix: /api/blog

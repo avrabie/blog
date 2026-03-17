@@ -26,27 +26,19 @@ A modern, production-quality React application for a personal technology blog, b
 
 ## 🏁 Getting Started
 
-### 1. Configure Environment
-
-Create a `.env` file in the `blog-frontend` directory:
-
-```env
-VITE_API_URL=/api
-```
-
-### 2. Install Dependencies
+### 1. Install Dependencies
 
 ```bash
 npm install
 ```
 
-### 3. Run Development Server
+### 2. Run Development Server
 
 ```bash
 npm run dev
 ```
 
-The application will be available at `http://localhost:5173`. It is configured to proxy API requests to `http://localhost:8080` (the Spring Boot backend).
+The application will be available at `http://localhost:5173`. In development, the Vite dev server proxies `/api/blog` (including `/api/blog/sse`) to `http://localhost:8082` so you can run the backend locally. In production, keep the frontend behind the gateway so requests are same-origin under `/api/blog`.
 
 ## 📁 Project Structure
 

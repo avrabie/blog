@@ -13,7 +13,8 @@ export interface Post {
 
 export interface Comment {
   id: string;
-  postSlug: string;
+  postId: number;
+  parentId?: number;
   author: string;
   content: string;
   createdAt: string;

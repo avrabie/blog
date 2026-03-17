@@ -46,6 +46,21 @@ public class CommentService {
                 });
     }
 
+    public Mono<Comment> addReply(Long parentId, Comment reply) {
+        return commentRepository.findById(parentId)
+                .flatMap(parentComment -> {
+                    reply.setParentId(parentId);
+                    reply.setPostId(parentComment.getPostId());
+                    return commentRepository.save(reply)
+                            .doOnNext(savedComment -> {
+                                Sinks.EmitResult result = commentSink.tryEmitNext(savedComment);
+                                if (result.isFailure()) {
+                                    System.err.println("[CommentService] Failed to emit comment: " + result);
+                                }
+                            });
+                });
+    }
+
     public Mono<Comment> updateComment(Long id, Comment comment) {
         return commentRepository.findById(id)
                 .flatMap(existingComment -> {

@@ -11,6 +11,11 @@ export const addComment = async (slug: string, comment: NewCommentRequest): Prom
   return response.data;
 };
 
+export const addReply = async (commentId: string, reply: NewCommentRequest): Promise<Comment> => {
+  const response = await apiClient.post<Comment>(`/comments/${commentId}/replies`, reply);
+  return response.data;
+};
+
 export const updateComment = async (slug: string, id: string, comment: Partial<NewCommentRequest>): Promise<Comment> => {
   const response = await apiClient.put<Comment>(`/posts/${slug}/comments/${id}`, comment);
   return response.data;

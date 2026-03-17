@@ -7,6 +7,7 @@ import ai.almostworking.blog.model.Post;
 import ai.almostworking.blog.service.BlogService;
 import ai.almostworking.blog.service.CommentService;
 import ai.almostworking.blog.service.CommentValidationService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
@@ -24,11 +25,13 @@ public class CommentHandler {
     private final CommentService commentService;
     private final CommentValidationService commentValidationService;
     private final BlogService blogService;
+    private final String apiPrefix;
 
-    public CommentHandler(CommentService commentService, CommentValidationService commentValidationService, BlogService blogService) {
+    public CommentHandler(CommentService commentService, CommentValidationService commentValidationService, BlogService blogService, @Value("${blog.api.prefix:/api/blog}") String apiPrefix) {
         this.commentService = commentService;
         this.commentValidationService = commentValidationService;
         this.blogService = blogService;
+        this.apiPrefix = apiPrefix;
     }
 
     public Mono<ServerResponse> getCommentsByPostSlug(ServerRequest request) {
@@ -66,8 +69,19 @@ public class CommentHandler {
         return request.bodyToMono(Comment.class)
                 .flatMap(commentValidationService::validateForCreate)
                 .flatMap(comment -> commentService.addComment(slug, comment))
-                .flatMap(comment -> ServerResponse.created(URI.create("/posts/" + slug + "/comments/" + comment.getId()))
+                .flatMap(comment -> ServerResponse.created(request.uriBuilder().path("/{id}").build(comment.getId()))
                         .bodyValue(comment))
+                .onErrorResume(InvalidCommentException.class, e -> ServerResponse.badRequest().bodyValue(new ErrorResponse(e.getMessage())));
+    }
+
+    public Mono<ServerResponse> addReply(ServerRequest request) {
+        Long parentId = Long.valueOf(request.pathVariable("id"));
+        return request.bodyToMono(Comment.class)
+                .flatMap(commentValidationService::validateForCreate)
+                .flatMap(comment -> commentService.addReply(parentId, comment))
+                .flatMap(comment -> ServerResponse.created(URI.create(apiPrefix + "/comments/" + comment.getId()))
+                        .bodyValue(comment))
+                .switchIfEmpty(ServerResponse.notFound().build())
                 .onErrorResume(InvalidCommentException.class, e -> ServerResponse.badRequest().bodyValue(new ErrorResponse(e.getMessage())));
     }
 

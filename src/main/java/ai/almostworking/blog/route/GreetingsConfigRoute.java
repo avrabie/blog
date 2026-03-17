@@ -1,6 +1,7 @@
 package ai.almostworking.blog.route;
 
 import org.jspecify.annotations.NonNull;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -12,10 +13,15 @@ import reactor.core.publisher.Mono;
 @Configuration
 public class GreetingsConfigRoute {
 
+    @Value("${blog.api.prefix:/api/blog}")
+    private String apiPrefix;
+
     @Bean
     public RouterFunction<ServerResponse>  routerFunctions() {
         return RouterFunctions.route()
-                .GET("/greetings", request -> greetingsHandler())
+                .path(apiPrefix, builder -> builder
+                        .GET("/greetings", request -> greetingsHandler())
+                )
                 .build();
     }
 

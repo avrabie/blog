@@ -11,6 +11,7 @@ public class Comment {
     @Id
     private Long id;
     private Long postId;
+    private Long parentId;
     private String author;
     private String content;
     private LocalDateTime createdAt;
