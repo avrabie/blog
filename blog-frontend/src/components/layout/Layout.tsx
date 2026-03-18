@@ -2,10 +2,17 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { cn } from '../../utils';
+import { UserInfo } from '../../types/auth';
+import { LoginButton } from '../auth/LoginButton';
+import { UserBadge } from '../auth/UserBadge';
 
-const Navbar: React.FC = () => {
+interface NavbarProps {
+  user: UserInfo | null;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ user }) => {
   const location = useLocation();
-  
+
   const navItems = [
     { name: 'Home', path: '/' },
     { name: 'Write', path: '/create-post' },
@@ -19,12 +26,12 @@ const Navbar: React.FC = () => {
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-primary to-brand-secondary" />
           <span className="font-bold text-lg hidden sm:block">Reactive.Blog</span>
         </Link>
-        
+
         <div className="flex gap-1">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
-              <Link 
+              <Link
                 key={item.path}
                 to={item.path}
                 className={cn(
@@ -43,6 +50,14 @@ const Navbar: React.FC = () => {
               </Link>
             );
           })}
+        </div>
+
+        <div className="ml-4">
+          {user ? (
+            <UserBadge user={user} />
+          ) : (
+            <LoginButton />
+          )}
         </div>
       </div>
     </nav>
@@ -67,12 +82,13 @@ const Footer: React.FC = () => {
 
 interface LayoutProps {
   children: React.ReactNode;
+  user: UserInfo | null;
 }
 
-export const Layout: React.FC<LayoutProps> = ({ children }) => {
+export const Layout: React.FC<LayoutProps> = ({ children, user }) => {
   return (
     <div className="min-h-screen flex flex-col pt-24">
-      <Navbar />
+      <Navbar user={user} />
       <main className="flex-1 max-w-4xl mx-auto w-full px-6">
         {children}
       </main>

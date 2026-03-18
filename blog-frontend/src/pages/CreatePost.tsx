@@ -4,11 +4,17 @@ import { motion } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import { createPost } from '../api/posts';
 import { NewPostRequest } from '../types';
+import { UserInfo } from '../types/auth';
 import { ArrowLeft, Send, Eye, Edit3, Tag as TagIcon, Plus, X, Copy, Check } from 'lucide-react';
 import { Badge } from '../components/ui/Badge';
 import { Card } from '../components/ui/Card';
+import { LoginButton } from '../components/auth/LoginButton';
 
-export const CreatePost: React.FC = () => {
+interface CreatePostProps {
+  user: UserInfo | null;
+}
+
+export const CreatePost: React.FC<CreatePostProps> = ({ user }) => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPreviewMode, setIsPreviewMode] = useState(false);
@@ -57,7 +63,7 @@ export const CreatePost: React.FC = () => {
     e.preventDefault();
     
     // Include pending tag if exists
-    let finalTags = [...formData.tags];
+    const finalTags = [...formData.tags];
     const trimmedTag = tagInput.trim();
     if (trimmedTag && !finalTags.includes(trimmedTag)) {
       finalTags.push(trimmedTag);
@@ -86,16 +92,25 @@ export const CreatePost: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="py-12 pb-40 max-w-4xl mx-auto">
-      <header className="flex items-center justify-between mb-12">
-        <button 
-          type="button"
-          onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 text-neutral-500 hover:text-white transition-colors group"
-        >
-          <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-          Back
-        </button>
+    <>
+      {!user && (
+        <div className="py-20 flex flex-col items-center justify-center gap-6 text-center">
+          <h2 className="text-2xl font-bold">Login Required</h2>
+          <p className="text-neutral-400">Please log in to create a post.</p>
+          <LoginButton />
+        </div>
+      )}
+      {user && (
+        <form onSubmit={handleSubmit} className="py-12 pb-40 max-w-4xl mx-auto">
+          <header className="flex items-center justify-between mb-12">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="inline-flex items-center gap-2 text-neutral-500 hover:text-white transition-colors group"
+            >
+              <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+              Back
+            </button>
         
         <div className="flex gap-4">
           <button
@@ -277,6 +292,8 @@ export const CreatePost: React.FC = () => {
           </div>
         )}
       </motion.div>
-    </form>
+        </form>
+      )}
+    </>
   );
 };

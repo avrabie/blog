@@ -1,4 +1,4 @@
-import React, { Suspense, Component, ErrorInfo, ReactNode } from 'react';
+import React, { Suspense, Component, ErrorInfo, ReactNode, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Home } from './pages/Home';
@@ -8,6 +8,7 @@ import { CreatePost } from './pages/CreatePost';
 import { EditPost } from './pages/EditPost';
 import { Layout } from './components/layout/Layout';
 import { Skeleton } from './components/ui/Skeleton';
+import { UserInfo } from './types/auth';
 
 // Simple Error Boundary for the whole app
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error: Error | null }> {
@@ -62,11 +63,25 @@ const queryClient = new QueryClient({
 });
 
 const App: React.FC = () => {
+  const [user, setUser] = useState<UserInfo | null>(null);
+
+  useEffect(() => {
+    fetch('/api/bff/me')
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error('Not authenticated');
+      })
+      .then((data: UserInfo) => setUser(data))
+      .catch(() => setUser(null));
+  }, []);
+
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <Router>
-          <Layout>
+          <Layout user={user}>
             <Suspense fallback={
               <div className="py-20 space-y-8">
                 <Skeleton className="h-10 w-3/4" />
@@ -77,8 +92,8 @@ const App: React.FC = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/posts/:slug" element={<PostDetail />} />
                 <Route path="/about" element={<About />} />
-                <Route path="/create-post" element={<CreatePost />} />
-                <Route path="/edit-post/:slug" element={<EditPost />} />
+                <Route path="/create-post" element={<CreatePost user={user} />} />
+                <Route path="/edit-post/:slug" element={<EditPost user={user} />} />
               </Routes>
             </Suspense>
           </Layout>
