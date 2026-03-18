@@ -48,7 +48,8 @@ public class CommentHandler {
                 .map(comment -> ServerSentEvent.<Comment>builder()
                         .data(comment)
                         .event("comment-added")
-                        .build());
+                        .build()
+                );
 
         // Add heartbeat every 15 seconds to keep connection alive
         Flux<ServerSentEvent<Comment>> heartbeat = Flux.interval(Duration.ofSeconds(15))

@@ -4,4 +4,3 @@ namespace: blog-namespace
 
 resources:
   - service.yaml
-  - statefulset.yaml

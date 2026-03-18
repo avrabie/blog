@@ -4,11 +4,17 @@ import { motion } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import { createPost } from '../api/posts';
 import { NewPostRequest } from '../types';
+import { UserInfo } from '../types/auth';
 import { ArrowLeft, Send, Eye, Edit3, Tag as TagIcon, Plus, X, Copy, Check } from 'lucide-react';
 import { Badge } from '../components/ui/Badge';
 import { Card } from '../components/ui/Card';
+import { LoginButton } from '../components/auth/LoginButton';
 
-export const CreatePost: React.FC = () => {
+interface CreatePostProps {
+  user: UserInfo | null;
+}
+
+export const CreatePost: React.FC<CreatePostProps> = ({ user }) => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPreviewMode, setIsPreviewMode] = useState(false);
@@ -55,14 +61,27 @@ export const CreatePost: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title || !formData.content || !formData.author) {
+    
+    // Include pending tag if exists
+    const finalTags = [...formData.tags];
+    const trimmedTag = tagInput.trim();
+    if (trimmedTag && !finalTags.includes(trimmedTag)) {
+      finalTags.push(trimmedTag);
+    }
+
+    const submissionData = {
+      ...formData,
+      tags: finalTags
+    };
+
+    if (!submissionData.title || !submissionData.content || !submissionData.author) {
       alert('Please fill in all required fields (Title, Content, Author)');
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const result = await createPost(formData);
+      const result = await createPost(submissionData);
       navigate(`/posts/${result.slug}`);
     } catch (error) {
       console.error('Failed to create post:', error);
@@ -73,18 +92,29 @@ export const CreatePost: React.FC = () => {
   };
 
   return (
-    <div className="py-12 pb-40 max-w-4xl mx-auto">
-      <header className="flex items-center justify-between mb-12">
-        <button 
-          onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 text-neutral-500 hover:text-white transition-colors group"
-        >
-          <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-          Back
-        </button>
+    <>
+      {!user && (
+        <div className="py-20 flex flex-col items-center justify-center gap-6 text-center">
+          <h2 className="text-2xl font-bold">Login Required</h2>
+          <p className="text-neutral-400">Please log in to create a post.</p>
+          <LoginButton />
+        </div>
+      )}
+      {user && (
+        <form onSubmit={handleSubmit} className="py-12 pb-40 max-w-4xl mx-auto">
+          <header className="flex items-center justify-between mb-12">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="inline-flex items-center gap-2 text-neutral-500 hover:text-white transition-colors group"
+            >
+              <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+              Back
+            </button>
         
         <div className="flex gap-4">
           <button
+            type="button"
             onClick={() => setIsPreviewMode(!isPreviewMode)}
             className="glass-button flex items-center gap-2"
           >
@@ -93,7 +123,7 @@ export const CreatePost: React.FC = () => {
           </button>
           
           <button
-            onClick={handleSubmit}
+            type="submit"
             disabled={isSubmitting}
             className="glass-button bg-brand-primary/20 border-brand-primary/40 text-brand-primary flex items-center gap-2 disabled:opacity-50"
           >
@@ -182,7 +212,7 @@ export const CreatePost: React.FC = () => {
                     {formData.tags.map(tag => (
                       <Badge key={tag} className="flex items-center gap-1.5 px-3 py-1">
                         {tag}
-                        <button onClick={() => removeTag(tag)} className="hover:text-white transition-colors">
+                        <button type="button" onClick={() => removeTag(tag)} className="hover:text-white transition-colors">
                           <X size={12} />
                         </button>
                       </Badge>
@@ -262,6 +292,8 @@ export const CreatePost: React.FC = () => {
           </div>
         )}
       </motion.div>
-    </div>
+        </form>
+      )}
+    </>
   );
 };

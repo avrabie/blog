@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
-  const devBackendUrl = 'http://localhost:8082';
+  const devBackendUrl = 'http://localhost:9090';
   const isDev = mode === 'development';
 
   return {
@@ -14,25 +14,29 @@ export default defineConfig(({ mode }) => {
     ],
     server: isDev ? {
       proxy: {
+        '/oauth2': {
+          target: devBackendUrl,
+          changeOrigin: true,
+        },
+        '/api/bff': {
+          target: devBackendUrl,
+          changeOrigin: true,
+        },
         '/api/blog/sse': {
           target: devBackendUrl,
           changeOrigin: true,
-          // SSE stability: prevent proxy timeouts
           timeout: 0,
           proxyTimeout: 0,
-          configure: (proxy, _options) => {
-            proxy.on('proxyReq', (_proxyReq, req, _res) => {
+          configure: (proxy) => {
+            proxy.on('proxyReq', (_proxyReq, req) => {
               console.log('[Vite Proxy] SSE request:', req.url);
             });
-            proxy.on('proxyRes', (proxyRes, _req, _res) => {
+            proxy.on('proxyRes', (proxyRes) => {
               console.log('[Vite Proxy] SSE response status:', proxyRes.statusCode);
-              console.log('[Vite Proxy] Response headers:', proxyRes.headers);
 
-              // Fix the connection header for SSE streaming
               if (proxyRes.headers['content-type']?.includes('text/event-stream')) {
                 delete proxyRes.headers['connection'];
                 proxyRes.headers['connection'] = 'keep-alive';
-                console.log('[Vite Proxy] Fixed SSE connection header to keep-alive');
               }
             });
           },
@@ -44,4 +48,4 @@ export default defineConfig(({ mode }) => {
       },
     } : undefined,
   };
-})
+});

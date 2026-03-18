@@ -1,98 +1,112 @@
 ### Get all posts
-GET http://localhost:8082/posts
+GET http://localhost:8082/api/blog/posts
 Accept: application/json
 
 ### Create a new post (slug will be generated)
-POST http://localhost:8080/posts
+POST http://localhost:8082/api/blog/posts
 Content-Type: application/json
 
 {
-  "title": "Hello World",
+  "title": "Hello World 2",
+  "subtitle": "Welcome to my reactive blog",
   "content": "### Some content goes here",
-  "author": "Adrian"
+  "author": "Adrian",
+  "tags": ["java", "spring", "reactive"]
 }
 
 ### Get the generated post
-GET http://localhost:8080/posts/welcome-to-my-blog
+GET http://localhost:8082/api/blog/posts/welcome-to-my-blog
 Accept: application/json
 
 ### Create a post with a custom slug
-POST http://localhost:8080/posts
+POST http://localhost:8082/api/blog/posts
 Content-Type: application/json
 
 {
   "title": "Post with custom slug",
+  "subtitle": "Manually set slug example",
   "content": "This post has its own slug set manually.",
   "slug": "custom-slug-example",
-  "author": "Adrian"
+  "author": "Adrian",
+  "tags": ["custom", "slug"]
 }
 
 ### Try to create a post with the same slug (should return 409 Conflict)
-POST http://localhost:8080/posts
+POST http://localhost:8082/api/blog/posts
 Content-Type: application/json
 
 {
   "title": "Another Post with same custom slug",
+  "subtitle": "Duplicate slug test",
   "content": "This post tries to use the same slug.",
   "slug": "custom-slug-example",
-  "author": "Adrian"
+  "author": "Adrian",
+  "tags": ["error", "duplicate"]
 }
 
 ### Try to create a post with the same title (should return 409 Conflict due to duplicate slug generation)
-POST http://localhost:8080/posts
+POST http://localhost:8082/api/blog/posts
 Content-Type: application/json
 
 {
   "title": "Post with custom slug",
+  "subtitle": "Duplicate title test",
   "content": "This post has the same title and will generate the same slug.",
-  "author": "Adrian"
+  "author": "Adrian",
+  "tags": ["error", "duplicate"]
 }
 
 ### Try to create a post with missing title (should return 400 Bad Request)
-POST http://localhost:8080/posts
+POST http://localhost:8082/api/blog/posts
 Content-Type: application/json
 
 {
+  "subtitle": "No title test",
   "content": "Post with no title",
-  "author": "Adrian"
+  "author": "Adrian",
+  "tags": ["error"]
 }
 
 ### Try to create a post with empty title (should return 400 Bad Request)
-POST http://localhost:8080/posts
+POST http://localhost:8082/api/blog/posts
 Content-Type: application/json
 
 {
   "title": "  ",
+  "subtitle": "Empty title test",
   "content": "Post with empty title",
-  "author": "Adrian"
+  "author": "Adrian",
+  "tags": ["error"]
 }
 
 ### Get the post by custom slug
-GET http://localhost:8080/posts/custom-slug-example
+GET http://localhost:8082/api/blog/posts/custom-slug-example
 Accept: application/json
 
 ### Update post title (should update slug too)
-PUT http://localhost:8080/posts/welcome-to-my-blog
+PUT http://localhost:8082/api/blog/posts/welcome-to-my-blog
 Content-Type: application/json
 
 {
   "title": "Welcome to my Blog",
-  "content": "Updated content. :)"
+  "subtitle": "An updated subtitle",
+  "content": "Updated content. :)",
+  "tags": ["update", "test"]
 }
 
 ### Get post with new slug
-GET http://localhost:8080/posts/welcome-to-my-updated-blog
+GET http://localhost:8082/api/blog/posts/welcome-to-my-updated-blog
 Accept: application/json
 
 ### Delete post
-DELETE http://localhost:8080/posts/welcome-to-my-updated-blog
+DELETE http://localhost:8082/api/blog/posts/welcome-to-my-updated-blog
 
 ### Delete other post
-DELETE http://localhost:8080/posts/post-with-custom-slug
+DELETE http://localhost:8082/api/blog/posts/post-with-custom-slug
 
 ### Delete all posts
-DELETE http://localhost:8080/posts
+DELETE http://localhost:8082/api/blog/posts
 
 
 ### Delete id posts
-DELETE http://localhost:8082/posts/id/36
+DELETE http://localhost:8082/api/blog/posts/id/36

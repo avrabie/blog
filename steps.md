@@ -170,3 +170,32 @@ CREATE TABLE post (
 - Updated `CommentHandler` to inject `BlogService` and handle `streamPosts`.
 - Configured the new route in `BlogRoutes` at `/sse/posts/stream`.
 - Added test cases to `scratches/temp/test-sse.http` to verify real-time post streaming.
+
+---
+
+## Step 15: Kustomize Overlays for Local and Hetzner
+**Prompt:**
+"I have k8s folder for deployment into k8s with kustomize. It works fine in the local environment, but i would like to have an overlay for hetzner cloud. Since I have postgres database dependency, i need something like this for the hetzner overlay: a persistent volume claim ... and I don't know but we probably need to change the stateful set so that we could have volumes ... could you please do the overlays, one for local, with current setul and another one for hetzner"
+
+**Actions:**
+- Refactored the `k8s/` directory into a `base` and `overlays` structure.
+- Created `k8s/base` containing the core resources (be, fe, db).
+- Implemented `k8s/overlays/local` with a specific `statefulset.yaml` preserving the original `volumeClaimTemplates` setup.
+- Created `k8s/overlays/hetzner` with:
+    - A dedicated `PersistentVolumeClaim` named `postgres-pvc`.
+    - A specific `statefulset.yaml` that uses the manual PVC via a `volumes` entry, avoiding complex patches.
+- Updated both overlays to explicitly manage the `blog-namespace`.
+- Removed the shared `statefulset.yaml` from `k8s/base/db` to prevent unwanted inheritance and ensure clean isolation between environments.
+- Added a root `k8s/kustomization.yaml` that defaults to the `local` overlay for backward compatibility.
+
+---
+
+## Step 16: Switch to Dockerfile for AMD64 Build
+**Prompt:**
+"ok, could you please create me the dockerfile for the BE or what would you recommend me do?"
+
+**Actions:**
+- Identified that `bootBuildImage` (Paketo) on ARM Mac produced architecture-mismatched binaries for `amd64`.
+- Created a multi-stage `Dockerfile` in the root to manually build the Spring Boot JAR and create a clean `amd64` image.
+- Implemented `build-be.sh` script to automate building with `--platform linux/amd64` and pushing the image.
+- Documented the transition from Spring Boot's internal builder to an explicit `Dockerfile` for better platform control.

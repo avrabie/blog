@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: blog-namespace
+
+resources:
+  - namespace.yaml
+  - be
+  - fe
+  - db
+
+secretGenerator:
+  - name: postgres-secret
+    literals:
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_USER=myuser
+      - POSTGRES_DB=mydatabase

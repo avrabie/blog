@@ -10,6 +10,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
+import reactor.util.concurrent.Queues;
 
 @Service
 public class BlogService {
@@ -21,7 +22,7 @@ public class BlogService {
     public BlogService(PostRepository postRepository, SlugService slugService) {
         this.postRepository = postRepository;
         this.slugService = slugService;
-        this.postSink = Sinks.many().multicast().onBackpressureBuffer();
+        this.postSink = Sinks.many().multicast().onBackpressureBuffer(Queues.XS_BUFFER_SIZE, false);
     }
 
     public Flux<Post> getAllPosts() {
@@ -67,6 +68,12 @@ public class BlogService {
                     }
                     if (post.getAuthor() != null) {
                         existingPost.setAuthor(post.getAuthor());
+                    }
+                    if (post.getSubtitle() != null) {
+                        existingPost.setSubtitle(post.getSubtitle());
+                    }
+                    if (post.getTags() != null) {
+                        existingPost.setTags(post.getTags());
                     }
                     return postRepository.save(existingPost)
                             .doOnNext(savedPost -> {
