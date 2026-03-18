@@ -6,6 +6,7 @@ import { PostDetail } from './pages/PostDetail';
 import { About } from './pages/About';
 import { CreatePost } from './pages/CreatePost';
 import { EditPost } from './pages/EditPost';
+import { Profile } from './pages/Profile';
 import { Layout } from './components/layout/Layout';
 import { Skeleton } from './components/ui/Skeleton';
 import { UserInfo } from './types/auth';
@@ -92,6 +93,7 @@ const App: React.FC = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/posts/:slug" element={<PostDetail />} />
                 <Route path="/about" element={<About />} />
+                <Route path="/profile" element={<Profile />} />
                 <Route path="/create-post" element={<CreatePost user={user} />} />
                 <Route path="/edit-post/:slug" element={<EditPost user={user} />} />
               </Routes>

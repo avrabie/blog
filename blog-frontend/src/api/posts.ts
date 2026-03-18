@@ -1,4 +1,4 @@
-import apiClient from './client';
+import { apiClient } from './client';
 import { Post, NewPostRequest } from '../types';
 
 export const getPosts = async (): Promise<Post[]> => {
