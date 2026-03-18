@@ -53,4 +53,6 @@ tasks.named<BootBuildImage>("bootBuildImage") {
 
     imageName.set("gluonstream/blog-be:$tag")
     tags.set(listOf("gluonstream/blog-be:latest"))
+    imagePlatform.set("linux/amd64")
+
 }

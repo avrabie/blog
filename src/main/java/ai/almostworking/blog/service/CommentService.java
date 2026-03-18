@@ -14,6 +14,8 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
+    //at the moment we only have one, but we could have a Map<slug, Sinks.Many<Comment>>
+    // and then we can get rid of the filter: good for scaling
     private final Sinks.Many<Comment> commentSink;
 
     public CommentService(CommentRepository commentRepository, PostRepository postRepository) {
@@ -68,6 +70,7 @@ public class CommentService {
                     if (comment.getContent() != null) {
                         existingComment.setContent(comment.getContent());
                     }
+                    // refactor this later with functionalities like in SO :)
                     if (comment.getAuthor() != null) {
                         existingComment.setAuthor(comment.getAuthor());
                     }
