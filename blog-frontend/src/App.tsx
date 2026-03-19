@@ -8,6 +8,8 @@ import { CreatePost } from './pages/CreatePost';
 import { EditPost } from './pages/EditPost';
 import { Profile } from './pages/Profile';
 import { Chat } from './pages/Chat';
+import { PrivacyPolicy } from './pages/PrivacyPolicy';
+import { TermsOfService } from './pages/TermsOfService';
 import { Layout } from './components/layout/Layout';
 import { Skeleton } from './components/ui/Skeleton';
 import { UserInfo } from './types/auth';
@@ -98,6 +100,8 @@ const App: React.FC = () => {
                 <Route path="/chat" element={<Chat user={user} />} />
                 <Route path="/create-post" element={<CreatePost user={user} />} />
                 <Route path="/edit-post/:slug" element={<EditPost user={user} />} />
+                <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/terms" element={<TermsOfService />} />
               </Routes>
             </Suspense>
           </Layout>

@@ -73,6 +73,8 @@ const Footer: React.FC = () => {
           © {new Date().getFullYear()} Reactive Systems Blog. Built with FE: React + Junie; BE: Java + WebFlux.
         </div>
         <div className="flex gap-6">
+          <Link to="/privacy" className="text-neutral-400 hover:text-white transition-colors">Privacy Policy</Link>
+          <Link to="/terms" className="text-neutral-400 hover:text-white transition-colors">Terms</Link>
           <a href="https://github.com" target="_blank" rel="noreferrer" className="text-neutral-400 hover:text-white transition-colors">GitHub</a>
           <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="text-neutral-400 hover:text-white transition-colors">LinkedIn</a>
         </div>
