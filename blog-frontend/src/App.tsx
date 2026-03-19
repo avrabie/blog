@@ -12,7 +12,7 @@ import { PrivacyPolicy } from './pages/PrivacyPolicy';
 import { TermsOfService } from './pages/TermsOfService';
 import { Layout } from './components/layout/Layout';
 import { Skeleton } from './components/ui/Skeleton';
-import { UserInfo } from './types/auth';
+import { UserInfo, BffUserResponse, parseBffUserResponse } from './types/auth';
 
 // Simple Error Boundary for the whole app
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error: Error | null }> {
@@ -70,14 +70,14 @@ const App: React.FC = () => {
   const [user, setUser] = useState<UserInfo | null>(null);
 
   useEffect(() => {
-    fetch('/api/bff/me')
+    fetch('/api/bff/user')
       .then(response => {
         if (response.ok) {
           return response.json();
         }
         throw new Error('Not authenticated');
       })
-      .then((data: UserInfo) => setUser(data))
+      .then((data: BffUserResponse) => setUser(parseBffUserResponse(data)))
       .catch(() => setUser(null));
   }, []);
 
