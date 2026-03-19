@@ -16,6 +16,7 @@ const Navbar: React.FC<NavbarProps> = ({ user }) => {
   const navItems = [
     { name: 'Home', path: '/' },
     { name: 'Write', path: '/create-post' },
+    { name: 'Chat', path: '/chat' },
     { name: 'About', path: '/about' },
   ];
 
@@ -69,7 +70,7 @@ const Footer: React.FC = () => {
     <footer className="py-12 px-6 border-t border-white/5 mt-auto">
       <div className="max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
         <div className="text-neutral-500 text-sm">
-          © {new Date().getFullYear()} Reactive Systems Blog. Built with Vite + WebFlux.
+          © {new Date().getFullYear()} Reactive Systems Blog. Built with FE: React + Junie; BE: Java + WebFlux.
         </div>
         <div className="flex gap-6">
           <a href="https://github.com" target="_blank" rel="noreferrer" className="text-neutral-400 hover:text-white transition-colors">GitHub</a>

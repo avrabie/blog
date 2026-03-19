@@ -1,5 +1,6 @@
 package ai.almostworking.blog.route;
 
+import ai.almostworking.blog.handler.ChatHandler;
 import ai.almostworking.blog.handler.CommentHandler;
 import ai.almostworking.blog.handler.PostHandler;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +18,8 @@ public class BlogRoutes {
 
     //api/blog
     @Bean
-    public RouterFunction<ServerResponse> routes(PostHandler postHandler, CommentHandler commentHandler) {
+    public RouterFunction<ServerResponse> routes(PostHandler postHandler, CommentHandler commentHandler,
+                                                 ChatHandler chatHandler) {
         return RouterFunctions.route()
                 .path(apiPrefix, builder -> builder
                         .GET("/posts/{slug}/comments", commentHandler::getCommentsByPostSlug)
@@ -32,16 +34,20 @@ public class BlogRoutes {
                         .DELETE("/posts/{slug}", postHandler::deletePost)
                         .DELETE("/posts/id/{id}", postHandler::deletePostById)
                         .DELETE("/posts", postHandler::deleteAllPosts) // I know!
+                        .GET("/chat", chatHandler::chat)
+                        .POST("/chat", chatHandler::postChat)
+                        .DELETE("/chat/{id}", chatHandler::deleteChat)
                 )
                 .build();
     }
 
     @Bean
-    public RouterFunction<ServerResponse> sseRoutes(CommentHandler commentHandler) {
+    public RouterFunction<ServerResponse> sseRoutes(CommentHandler commentHandler, ChatHandler chatHandler) {
         return RouterFunctions.route()
                 .path(apiPrefix, builder -> builder
                         .GET("/sse/posts/{slug}/comments/stream", commentHandler::streamComments)
                         .GET("/sse/posts/stream", commentHandler::streamPosts)
+                        .GET("/sse/chat/stream", chatHandler::streamChats)
                 )
                 .build();
     }
