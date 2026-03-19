@@ -1,9 +1,10 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { User, Shield, Mail } from 'lucide-react';
+import { User, Shield, Mail, LogOut } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { Skeleton } from '../components/ui/Skeleton';
+import { LogoutButton } from '../components/auth/LogoutButton';
 import { getUserProfile } from '../api/profile';
 import { UserProfile } from '../types/auth';
 
@@ -13,8 +14,8 @@ export const Profile: React.FC = () => {
     queryFn: getUserProfile,
   });
 
-  const user = profile as UserProfile | undefined;
-  const claims = user?.credentials?.claims;
+  const profileData = profile as UserProfile | undefined;
+  const claims = profileData?.credentials?.claims;
 
   return (
     <div className="py-20 space-y-8">
@@ -39,7 +40,7 @@ export const Profile: React.FC = () => {
         </Card>
       )}
 
-      {user && (
+      {profileData && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -82,7 +83,7 @@ export const Profile: React.FC = () => {
               <span className="text-sm font-medium">Roles & Permissions</span>
             </div>
             <div className="flex flex-wrap gap-2">
-              {user.authorities?.map((auth, index) => (
+              {profileData?.authorities?.map((auth: { authority: string }, index: number) => (
                 <span
                   key={index}
                   className="px-3 py-1 rounded-full bg-brand-primary/20 text-brand-primary text-sm"
@@ -90,6 +91,16 @@ export const Profile: React.FC = () => {
                   {auth.authority.replace('ROLE_', '')}
                 </span>
               ))}
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-neutral-400">
+                <LogOut size={18} />
+                <span className="text-sm font-medium">Session</span>
+              </div>
+              <LogoutButton />
             </div>
           </Card>
         </motion.div>
