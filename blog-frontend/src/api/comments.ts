@@ -1,4 +1,4 @@
-import apiClient from './client';
+import { apiClient } from './client';
 import { Comment, NewCommentRequest } from '../types';
 
 export const getCommentsByPostSlug = async (slug: string): Promise<Comment[]> => {

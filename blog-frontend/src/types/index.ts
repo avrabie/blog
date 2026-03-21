@@ -32,3 +32,15 @@ export interface NewCommentRequest {
   author: string;
   content: string;
 }
+
+export interface Chat {
+  id: number;
+  author: string;
+  content: string;
+  createdAt: string;
+}
+
+export interface NewChatRequest {
+  author: string;
+  content: string;
+}

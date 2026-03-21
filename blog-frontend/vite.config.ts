@@ -18,6 +18,10 @@ export default defineConfig(({ mode }) => {
           target: devBackendUrl,
           changeOrigin: true,
         },
+        '/logout': {
+          target: devBackendUrl,
+          changeOrigin: true,
+        },
         '/api/bff': {
           target: devBackendUrl,
           changeOrigin: true,

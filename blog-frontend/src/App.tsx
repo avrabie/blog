@@ -6,9 +6,13 @@ import { PostDetail } from './pages/PostDetail';
 import { About } from './pages/About';
 import { CreatePost } from './pages/CreatePost';
 import { EditPost } from './pages/EditPost';
+import { Profile } from './pages/Profile';
+import { Chat } from './pages/Chat';
+import { PrivacyPolicy } from './pages/PrivacyPolicy';
+import { TermsOfService } from './pages/TermsOfService';
 import { Layout } from './components/layout/Layout';
 import { Skeleton } from './components/ui/Skeleton';
-import { UserInfo } from './types/auth';
+import { UserInfo, BffUserResponse, parseBffUserResponse } from './types/auth';
 
 // Simple Error Boundary for the whole app
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error: Error | null }> {
@@ -66,14 +70,14 @@ const App: React.FC = () => {
   const [user, setUser] = useState<UserInfo | null>(null);
 
   useEffect(() => {
-    fetch('/api/bff/me')
+    fetch('/api/bff/user')
       .then(response => {
         if (response.ok) {
           return response.json();
         }
         throw new Error('Not authenticated');
       })
-      .then((data: UserInfo) => setUser(data))
+      .then((data: BffUserResponse) => setUser(parseBffUserResponse(data)))
       .catch(() => setUser(null));
   }, []);
 
@@ -92,8 +96,12 @@ const App: React.FC = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/posts/:slug" element={<PostDetail />} />
                 <Route path="/about" element={<About />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/chat" element={<Chat user={user} />} />
                 <Route path="/create-post" element={<CreatePost user={user} />} />
                 <Route path="/edit-post/:slug" element={<EditPost user={user} />} />
+                <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/terms" element={<TermsOfService />} />
               </Routes>
             </Suspense>
           </Layout>

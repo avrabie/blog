@@ -10,4 +10,6 @@ docker push gluonstream/blog-be:latest
 # kind load docker-image gluonstream/blog-be:latest --name blog.s4v3
 
 # Restart the deployment to pick up the new image
-kubectl rollout restart deployment/blog-be -n blog-namespace
+kubectl apply -k k8s
+kubectl rollout restart deployment.apps/blog-be -n blog-namespace
+kubectl rollout restart deployment.apps/blog-fe -n blog-namespace

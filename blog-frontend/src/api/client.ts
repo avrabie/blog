@@ -1,8 +1,9 @@
 import axios from 'axios';
 
 export const API_BASE = '/api/blog';
+export const BFF_BASE = '/api/bff';
 
-const apiClient = axios.create({
+export const apiClient = axios.create({
   baseURL: API_BASE,
   headers: {
     'Content-Type': 'application/json',
@@ -10,4 +11,10 @@ const apiClient = axios.create({
   withCredentials: true,
 });
 
-export default apiClient;
+export const bffClient = axios.create({
+  baseURL: BFF_BASE,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true,
+});

@@ -25,7 +25,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({ user }) => {
     title: '',
     subtitle: '',
     content: '',
-    author: '',
+    author: user?.name || user?.username || '',
     tags: []
   });
 
