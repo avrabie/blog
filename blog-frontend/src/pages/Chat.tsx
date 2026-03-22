@@ -59,8 +59,14 @@ export const Chat: React.FC<ChatProps> = ({ user }) => {
 
   const sendMutation = useMutation({
     mutationFn: sendChat,
-    onSuccess: () => {
+    onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ['chats'] });
+      try {
+        const count = await getOnlineCount();
+        setOnlineCount(count);
+      } catch (error) {
+        console.log('[Chat] Failed to fetch online count:', error);
+      }
     },
   });
 
