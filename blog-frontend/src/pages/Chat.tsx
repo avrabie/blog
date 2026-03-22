@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { Send, Loader2 } from 'lucide-react';
@@ -41,7 +41,13 @@ export const Chat: React.FC<ChatProps> = ({ user }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [allChats]);
 
-  const addChat = async (newChat: ChatType) => {
+  useEffect(() => {
+    getOnlineCount()
+      .then(setOnlineCount)
+      .catch(() => {});
+  }, []);
+
+  const addChat = useCallback(async (newChat: ChatType) => {
     setStreamedChats(prev => {
       if (prev.some(c => c.id === newChat.id)) {
         return prev;
@@ -55,7 +61,7 @@ export const Chat: React.FC<ChatProps> = ({ user }) => {
     } catch (error) {
       console.log('[Chat] Failed to fetch online count:', error);
     }
-  };
+  }, []);
 
   const sendMutation = useMutation({
     mutationFn: sendChat,

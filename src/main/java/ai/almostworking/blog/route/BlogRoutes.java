@@ -1,5 +1,6 @@
 package ai.almostworking.blog.route;
 
+import ai.almostworking.blog.handler.AverageHandler;
 import ai.almostworking.blog.handler.ChatHandler;
 import ai.almostworking.blog.handler.CommentHandler;
 import ai.almostworking.blog.handler.PostHandler;
@@ -15,6 +16,13 @@ public class BlogRoutes {
 
     @Value("${blog.api.prefix:/api/blog}")
     private String apiPrefix;
+
+    @Bean
+    public RouterFunction<ServerResponse> averageRoute(AverageHandler averageHandler) {
+        return RouterFunctions.route()
+                .GET("/api/blog/getAverage", averageHandler::getAverage)
+                .build();
+    }
 
     //api/blog
     @Bean

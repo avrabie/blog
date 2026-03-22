@@ -18,3 +18,10 @@ export const bffClient = axios.create({
   },
   withCredentials: true,
 });
+
+export const gatewayClient = axios.create({
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true,
+});

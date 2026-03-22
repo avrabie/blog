@@ -1,6 +1,10 @@
-import axios from 'axios';
+import { gatewayClient } from './client';
+
+interface CounterResponse {
+  uniqueSessions: number;
+}
 
 export const getOnlineCount = async (): Promise<number> => {
-  const response = await axios.get<number>(`${import.meta.env.VITE_BACKEND_URL}/api/counter`);
-  return response.data;
+  const response = await gatewayClient.get<CounterResponse>('/api/counter');
+  return response.data.uniqueSessions;
 };
