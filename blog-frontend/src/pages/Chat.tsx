@@ -6,6 +6,7 @@ import { Card } from '../components/ui/Card';
 import { Skeleton } from '../components/ui/Skeleton';
 import { LoginButton } from '../components/auth/LoginButton';
 import { getChats, sendChat } from '../api/chat';
+import { getOnlineCount } from '../api/counter';
 import { useChatStream } from '../hooks/useChatStream';
 import { Chat as ChatType } from '../types';
 import { UserInfo } from '../types/auth';
@@ -19,6 +20,7 @@ const MAX_MESSAGE_LENGTH = 4096;
 export const Chat: React.FC<ChatProps> = ({ user }) => {
   const [message, setMessage] = useState('');
   const [streamedChats, setStreamedChats] = useState<ChatType[]>([]);
+  const [onlineCount, setOnlineCount] = useState<number>(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const queryClient = useQueryClient();
@@ -39,13 +41,20 @@ export const Chat: React.FC<ChatProps> = ({ user }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [allChats]);
 
-  const addChat = (newChat: ChatType) => {
+  const addChat = async (newChat: ChatType) => {
     setStreamedChats(prev => {
       if (prev.some(c => c.id === newChat.id)) {
         return prev;
       }
       return [...prev, newChat];
     });
+
+    try {
+      const count = await getOnlineCount();
+      setOnlineCount(count);
+    } catch (error) {
+      console.log('[Chat] Failed to fetch online count:', error);
+    }
   };
 
   const sendMutation = useMutation({
@@ -94,7 +103,13 @@ export const Chat: React.FC<ChatProps> = ({ user }) => {
   return (
     <div className="py-6 flex flex-col h-[calc(100vh-6rem)]">
       <Card hover={false} className="flex-1 flex flex-col overflow-hidden">
-        <div className="flex-1 overflow-y-auto p-3 space-y-1">
+        <div className="flex items-center gap-2 px-3 pt-3 pb-1 border-b border-white/10">
+            <div className="flex items-center gap-2 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-brand-primary/10 text-brand-primary border border-brand-primary/20">
+              <span className="w-2 h-2 rounded-full bg-brand-primary animate-pulse" />
+              {onlineCount} online
+            </div>
+          </div>
+          <div className="flex-1 overflow-y-auto p-3 space-y-1">
           {isLoading ? (
             <div className="space-y-2">
               {[1, 2, 3].map(i => (
